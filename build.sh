@@ -1,6 +1,10 @@
 #!/bin/bash
+# Build script for forsp Java implementation
 
-CFLAGS="-std=c11 -Wall -Werror -O2 -g"
-LDFLAGS=""
+# Create bin directory if it doesn't exist
+mkdir -p bin
 
-gcc $CFLAGS -o forsp forsp.c $LDFLAGS
+# Compile all Java files
+javac -d bin -sourcepath . *.java
+
+echo "Build complete! Run with: java -cp bin forsp.Main <file.fp>"
