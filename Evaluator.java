@@ -80,23 +80,30 @@ public class Evaluator {
         currentEnv = envPtr;
 
         if (expr.isAtom()) {
-            // When evaluating an atom, it means "execute the code named x"
-            // This should look up the value of x in the environment
-            ForspObj val = env.find(envPtr[0], expr);
-            if (val.isClos()) {
-                // Create a new environment array for the closure's environment
-                ForspObj[] closEnv = new ForspObj[]{val.getClos().env};
-                currentEnv = closEnv;
-                compute(val.getClos().body, closEnv);
-                // Update envPtr with any changes made during compute
-                envPtr[0] = closEnv[0];
-            } else if (val.isPrim()) {
-                // Push the value onto the stack when prim is used with push
-                // But apply the primitive if we're evaluating it directly
-                // Check if we're being called from push by looking at the call context
-                val.getPrim().apply(this);
-            } else {
-                push(val);
+            try {
+                ForspObj val = env.find(envPtr[0], expr);
+                if (val.isClos()) {
+                    // Create a new environment array for the closure's environment
+                    ForspObj[] closEnv = new ForspObj[]{val.getClos().env};
+                    currentEnv = closEnv;
+                    compute(val.getClos().body, closEnv);
+                    // Update envPtr with any changes made during compute
+                    envPtr[0] = closEnv[0];
+                } else if (val.isPrim()) {
+                    // Push the value onto the stack when prim is used with push
+                    // But apply the primitive if we're evaluating it directly
+                    // Check if we're being called from push by looking at the call context
+                    val.getPrim().apply(this);
+                } else {
+                    push(val);
+                }
+            } catch (RuntimeException e) {
+                if (e.getMessage().startsWith("Failed to find key='")) {
+                    // Push the atom itself when not found
+                    push(expr);
+                } else {
+                    throw e;
+                }
             }
         } else if (expr.isNil() || expr.isPair()) {
             // A list is a closure

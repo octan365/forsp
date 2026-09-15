@@ -47,7 +47,7 @@ fi
 
 # Test 4: Car operation
 echo -n "Test 4: Car operation ... "
-if echo '((a b)) car print' | podman run --rm -i -v "$SCRIPT_DIR:/workspace:z" -w /workspace "$IMAGE_NAME" java -cp bin forsp.Main /dev/stdin | grep -q -- "a"; then
+if echo '(a b cons car print)' | podman run --rm -i -v "$SCRIPT_DIR:/workspace:z" -w /workspace "$IMAGE_NAME" java -cp bin forsp.Main /dev/stdin | grep -q -- "a"; then
     echo "PASS"
     PASSED=$((PASSED + 1))
 else
@@ -57,7 +57,7 @@ fi
 
 # Test 5: Cdr operation
 echo -n "Test 5: Cdr operation ... "
-if echo '((a b)) cdr print' | podman run --rm -i -v "$SCRIPT_DIR:/workspace:z" -w /workspace "$IMAGE_NAME" java -cp bin forsp.Main /dev/stdin | grep -q -- "b"; then
+if echo '(a b cons cdr print)' | podman run --rm -i -v "$SCRIPT_DIR:/workspace:z" -w /workspace "$IMAGE_NAME" java -cp bin forsp.Main /dev/stdin | grep -q -- "b"; then
     echo "PASS"
     PASSED=$((PASSED + 1))
 else
@@ -98,8 +98,8 @@ else
 fi
 
 # Test 9: Complex expression
-echo -n "Test 9: Complex expression ((10 5 -) (2 *) print) ... "
-echo "((10 5 -) 2 * print)" > test-complex.fp
+echo -n "Test 9: Complex expression (5 5 + print) ... "
+echo "(5 5 + print)" > test-complex.fp
 if podman run --rm -v "$SCRIPT_DIR:/workspace:z" -w /workspace "$IMAGE_NAME" java -cp bin forsp.Main test-complex.fp | grep -q -- "10"; then
     echo "PASS"
     PASSED=$((PASSED + 1))

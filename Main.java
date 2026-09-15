@@ -101,7 +101,8 @@ class ForspInterpreter {
     }
 
     private ForspObj definePrim(ForspObj env, String name, ForspObj.PrimitiveFunction func) {
-        return this.env.define(env, reader.intern(name), ForspObj.makePrim(func));
+        ForspObj result = this.env.define(env, reader.intern(name), ForspObj.makePrim(func));
+        return result;
     }
 
     private ForspObj registerPrimitives(ForspObj env) {
@@ -145,6 +146,11 @@ class ForspInterpreter {
             ForspObj b = e.pop();
             ForspObj a = e.pop();
             e.push(ForspObj.makeNum(a.toLong() - b.toLong()));
+        });
+        env = definePrim(env, "+", e -> {
+            ForspObj b = e.pop();
+            ForspObj a = e.pop();
+            e.push(ForspObj.makeNum(a.toLong() + b.toLong()));
         });
         env = definePrim(env, "*", e -> {
             ForspObj b = e.pop();
